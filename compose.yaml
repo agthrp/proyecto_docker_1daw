@@ -1,0 +1,38 @@
+name: notes-backend
+
+services:
+  notebooks-db:
+    # Cambiamos a la versión 4.4 como has pedido
+    image: mongo:4.4
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_INITDB_ROOT_PASSWORD}
+    volumes:
+      - notebooks-data:/data/db
+      - ./db-config/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    networks:
+      - notebooks-net
+
+  notebooks:
+    build: .
+    ports:
+      - "3001:80"
+    environment:
+      # Asegúrate de que estos nombres coincidan EXACTAMENTE con tu .env
+      - PORT=${PORT}
+      - DB_URL=${DB_URL}
+    depends_on:
+      - notebooks-db
+    networks:
+      - notebooks-net
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+
+networks:
+  notebooks-net:
+
+volumes:
+  notebooks-data:

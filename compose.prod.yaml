@@ -1,0 +1,11 @@
+name: notebooks-backend-prod
+
+services:
+  notebooks:
+    build:
+      context: .
+      target: production
+    env_file:
+      - .env.production
+    ports:
+      - "80:80"
